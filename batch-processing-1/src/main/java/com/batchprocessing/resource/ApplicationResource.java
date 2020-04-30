@@ -99,7 +99,7 @@ public class ApplicationResource extends RouteBuilder{
 			})
 			.aggregate(header("BATCHID"), new Aggregation()) //make an aggregate on this batch
 			.completionSize(10).id("myAggregator") //it will complete after 10 items
-			.completionInterval(5000) //it will force complete after x milliseconds (60000 for 1 minute, lower for testing)
+			.completionInterval(60000) //it will force complete after x milliseconds (60000 for 1 minute, lower for testing)
 			.aggregateController(controller) //set the controller if needed
 			.to("file:target/Out?filename=${date:now:yyyyMMdd}-${id}.csv");//output to file
 		}
