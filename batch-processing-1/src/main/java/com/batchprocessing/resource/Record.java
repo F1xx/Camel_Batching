@@ -1,5 +1,8 @@
 package com.batchprocessing.resource;
 
+import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
+
+@CsvRecord( separator = "," )
 public class Record {
 	public String transID;
 	public String transTms;
@@ -7,20 +10,52 @@ public class Record {
 	public String rcNum;
 	
 	
-	public Record(String tID, String tTms, String cID, String rcnum)
+	public Record(String transID, String transTms, String clientID, String rcNum)
 	{
-		transID = tID;
-		transTms = tTms;
-		clientID = cID;
-		rcNum = rcnum;
+		this.transID = transID;
+		this.transTms = transTms;
+		this.clientID = clientID;
+		this.rcNum = rcNum;
 	}
 	
-	public void PrintRecord()
+	public String GetTransID()
 	{
-		System.out.println("transID: " + transID);
-		System.out.println("transTms: " + transTms);
-		System.out.println("clientID: " + clientID);
-		System.out.println("rcNum: " + rcNum);
+		return transID;
+	}
+	
+	public String GetTransTms()
+	{
+		return transTms;
+	}
+	
+	public String GetClientID()
+	{
+		return clientID;
+	}
+	
+	public String GetRcNum()
+	{
+		return rcNum;
+	}
+	
+	public void SetTransID(String transID)
+	{
+		this.transID = transID;
+	}
+	
+	public void SetTransTms(String transTms)
+	{
+		this.transTms = transTms;
+	}
+	
+	public void SetClientID(String clientID)
+	{
+		this.clientID = clientID;
+	}
+	
+	public void SetRcNum(String rcNum)
+	{
+		this.rcNum = rcNum;
 	}
 	
     @Override
