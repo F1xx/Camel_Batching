@@ -48,6 +48,7 @@ class BatchProcessing1ApplicationTests extends CamelTestSupport
 		    HttpResponse.BodyHandlers.ofString());
 			
 			//200 is the status code for everything went well
+			logger.info("Response Code: {}", response.statusCode());
 			assert(response.statusCode() == 200);
 			logger.info(response.body());
         }

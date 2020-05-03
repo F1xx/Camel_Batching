@@ -3,11 +3,9 @@ import java.util.List;
 
 import javax.servlet.Servlet;
 
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
-import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.processor.aggregate.AggregateController;
 import org.apache.camel.processor.aggregate.DefaultAggregateController;
@@ -26,32 +24,32 @@ import com.batchprocessing.BatchProcessing1Application;
 @RestController
 public class ApplicationResource extends RouteBuilder{
 
-//	@GetMapping("/")
-//	public String landing() 
-//	{
-//		return "This is just a landing. This page does nothing.\nGo to /payload to deliver the json data";
-//	}
-//	
-//	@GetMapping("/payload")
-//	public String payloadlanding() 
-//	{
-//		return "This is the landing of payload. This isn't an actual website. it should be being interacted with by an application. Are you here by accident?";
-//	}
+	@GetMapping("/")
+	public String landing() 
+	{
+		return "This is just a landing. This page does nothing.\nGo to /payload to deliver the json data";
+	}
 	
-//	@Autowired
-//	ProducerTemplate producerTemplate;
+	@GetMapping("/payload")
+	public String payloadlanding() 
+	{
+		return "This is the landing of payload. This isn't an actual website. it should be being interacted with by an application. Are you here by accident?";
+	}
+	
+	@Autowired
+	ProducerTemplate producerTemplate;
 	
 	//post version of REST. Requires the payload data to be sent via post
-//	@PostMapping(path = "/payload")
-//	public String startCamelPost(@RequestBody String  message) 
-//	{
-//		Logger logger = LoggerFactory.getLogger(BatchProcessing1Application.class);
-//		logger.info("Received POST call!");
-//        
-//		producerTemplate.sendBody("direct:payload", message);
-//		
-//		return "Payload Taken";
-//	}
+	@PostMapping(path = "/payload")
+	public String startCamelPost(@RequestBody String  message) 
+	{
+		Logger logger = LoggerFactory.getLogger(BatchProcessing1Application.class);
+		logger.info("Received POST call!");
+        
+		producerTemplate.sendBody("direct:payload", message);
+		
+		return "Payload Taken";
+	}
 	
 	@Override
 	public void configure() throws Exception 
@@ -63,17 +61,16 @@ public class ApplicationResource extends RouteBuilder{
 		AggregateController controller = new DefaultAggregateController();
 		
 		//REST DSL is not remotely working and I've spent far too many hours on it.
-        rest()
-        .post("/payload").consumes("application/json")
-        .to("direct:payload");
+//        rest()
+//        .post("/payload").consumes("application/json")
+//        .to("direct:payload");
 
 		//simple safety that isn't actually safety but I don't have time to make this perfectly data-safe
 		try
 		{
-			//from("file:target/In?delete=true") //this is the from one folder into another method which does work
+			//from("file:target/In?noop=true") //this is the from one folder into another method which does work
 			//start from whatever the rest service tosses us
 			from("direct:payload")
-			//.split(body().tokenize("\n"))
 			.process(p -> //get the message from the exchange
 			{
 				//get the content
@@ -91,7 +88,7 @@ public class ApplicationResource extends RouteBuilder{
 			})
 			.aggregate(header("BATCHID"), new Aggregation()) //make an aggregate on this batch
 			.completionSize(10).id("myAggregator") //it will complete after 10 items
-			.completionInterval(5000) //it will force complete after x milliseconds (60000 for 1 minute, lower for testing)
+			.completionInterval(60000) //it will force complete after x milliseconds (60000 for 1 minute, lower for testing)
 			.aggregateController(controller) //set the controller if needed
 			.to("file:target/Out?filename=${date:now:yyyyMMdd}-${id}.csv");//output to file
 		}
@@ -103,10 +100,10 @@ public class ApplicationResource extends RouteBuilder{
 		}
 	}
 	
-	@Bean
-	public ServletRegistrationBean<Servlet> servletRegistrationBean() {
-	    ServletRegistrationBean<Servlet> registration = new ServletRegistrationBean<>(new CamelHttpTransportServlet(), "/*");
-	    registration.setName("CamelServlet");
-	    return registration;
-	}
+//	@Bean
+//	public ServletRegistrationBean<Servlet> servletRegistrationBean() {
+//	    ServletRegistrationBean<Servlet> registration = new ServletRegistrationBean<>(new CamelHttpTransportServlet(), "/*");
+//	    registration.setName("CamelServlet");
+//	    return registration;
+//	}
 }
